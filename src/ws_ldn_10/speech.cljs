@@ -42,11 +42,14 @@
               (recur (inc i) (str interim item) final)))
           (update-state interim final))))))
 
-(defn update-transcript
+(defn update-transcript!
   [interim final]
   (swap! state update :transcript assoc :interim interim :final final)
   (.log js/console "interim:" interim)
   (.log js/console "final:" final))
+
+(defn clear-transcript!
+  [] (swap! state dissoc :transcript))
 
 (defn transcript-comp
   []
@@ -57,13 +60,14 @@
          [:label "Interim:"]
          [:h2 {:style {:color "#999"}} (:interim @transcript)]
          [:label "Final:"]
-         [:h2 (:final @transcript)]]
+         [:h2 (:final @transcript)]
+         [:button {:on-click clear-transcript!} "Clear!"]]
         [:div "Waiting..."]))))
 
 (defn main
   []
   (let [rec (start-recognizer
-             {:result (result-handler update-transcript)})]
+             {:result (result-handler update-transcript!)})]
     (swap! state assoc :recognizer rec)
     (reagent/render-component
      [transcript-comp]
