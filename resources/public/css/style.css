@@ -1,0 +1,36 @@
+body {
+    font-family: Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    background: #f0f0f0;
+}
+
+nav {
+    margin-top: 1em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #000;
+}
+
+nav a {
+    background: #000;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5em;
+    border-radius: 4px 4px 0 0;
+    margin-right: 0.5em;
+}
+
+th {
+    text-align: left;
+}
+td {
+    min-width: 4em;
+}
+
+label {
+    width: 4em;
+    display: inline-block;
+}
+
+canvas {
+    cursor: crosshair;
+}
