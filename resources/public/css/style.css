@@ -4,33 +4,91 @@ body {
     background: #f0f0f0;
 }
 
-nav {
-    margin-top: 1em;
-    padding-bottom: 0.5em;
-    border-bottom: 1px solid #000;
+div.transcript, div.interim {
+    font-size: 200%;
+    font-family: Inconsolata, Menlo, monospace;
+    background: #f8f0e0;
+    padding: 10px;
+    min-height: 2em;
 }
 
-nav a {
-    background: #000;
-    color: #fff;
-    text-decoration: none;
-    padding: 0.5em;
-    border-radius: 4px 4px 0 0;
-    margin-right: 0.5em;
+div.ann-expr {
+    border-top: 1px solid #e8e0d0;
+    padding: 5px 0;
 }
 
-th {
-    text-align: left;
-}
-td {
-    min-width: 4em;
+.ann-type, .ann-number, .ann-keyword, .ann-color, .ann-unknown {
+    margin-right: 0.25em;
 }
 
-label {
-    width: 4em;
-    display: inline-block;
+.ann-type {
+    color: #f06;
 }
 
-canvas {
-    cursor: crosshair;
+.ann-number {
+    color: #90f;
+}
+
+.ann-keyword {
+    color: #3cf;
+}
+
+.ann-unknown {
+    color: #999;
+    font-weight: 100;
+    text-decoration: line-through;
+}
+
+.ann-color {
+    padding: 5px;
+}
+
+.ann-color-blue {
+    background: #00f;
+    color: white;
+}
+
+.ann-color-red {
+    background: #f00;
+    color: white;
+}
+
+.ann-color-green {
+    background: #0f0;
+    color: black;
+}
+
+.ann-color-yellow {
+    background: #ff0;
+    color: black;
+}
+
+.ann-color-orange {
+    background: #f50;
+    color: white;
+}
+
+.ann-color-pink {
+    background: #f0f;
+    color: white;
+}
+
+.ann-color-cyan {
+    background: #0ff;
+    color: black;
+}
+
+.ann-color-purple {
+    background: #808;
+    color: white;
+}
+
+.ann-color-white {
+    background: white;
+    color: black;
+}
+
+.ann-color-black {
+    background: black;
+    color: white;
 }
