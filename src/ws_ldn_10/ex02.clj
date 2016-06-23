@@ -54,20 +54,20 @@
 (defn dejong-bitmap
   [{:keys [width iter a b c d color bg blend]}]
   (prn :coeffs a b c d)
-  (let [scale      (/ width 4.1)
-        center     (v/vec2 (/ width 2))
-        img        (pix/make-image width width)
-        pixels     (pix/get-pixels img)
-        [rr rg rb] (map #(* % 255) @color)
-        ra         (peek @color)
-        blend-fn   (pix/blend-modes blend)]
+  (let [scale            (/ width 4.1)
+        center           (v/vec2 (/ width 2))
+        img              (pix/make-image width width)
+        pixels           (pix/get-pixels img)
+        [red green blue] (map #(* % 255) @color)
+        alpha            (peek @color)
+        blend-fn         (pix/blend-modes blend)]
     (when bg
       (apply pix/fill-array pixels @bg))
     (reduce
      (fn [[x y] _]
        (let [pos   (compute-dejong a b c d x y)
              [x y] (m/madd pos scale center)]
-         (pix/blend-pixel pixels x y width rr rg rb ra blend-fn)
+         (pix/blend-pixel pixels x y width red green blue alpha blend-fn)
          pos))
      [(m/random width) (m/random width)]
      (range iter))
@@ -94,9 +94,52 @@
     :b     -1.687
     :c     2.551
     :d     1.151
-    :color (col/rgba 0.7 0.2 0.3 0.15)
+    :color (col/rgba 0.7 0.2 0.25 0.15)
     :bg    (col/rgba 0 0 0.1)
     :blend :add})
   
   ;; -2.726 -2.082 -2.239 -2.340
+  )
+
+(defn dejong-bitmap-duo
+  [{:keys [width iter a b c d col1 col2 alpha bg blend]}]
+  (prn :coeffs a b c d)
+  (let [scale      (/ width 4.1)
+        center     (v/vec2 (/ width 2))
+        img        (pix/make-image width width)
+        pixels     (pix/get-pixels img)
+        [r1 g1 b1] (map #(* % 255) @col1)
+        [r2 g2 b2] (map #(* % 255) @col2)
+        blend-fn   (pix/blend-modes blend)]
+    (when bg
+      (apply pix/fill-array pixels @bg))
+    (reduce
+     (fn [[x y] _]
+       (let [pos   (compute-dejong a b c d x y)
+             red   (m/mix* r1 r2 (+ (* x 0.25) 0.5))
+             green (m/mix* g1 g2 (+ (* x 0.25) 0.5))
+             blue  (m/mix* b1 b2 (+ (* y 0.25) 0.5))
+             [x y] (m/madd pos scale center)]
+         (pix/blend-pixel pixels x y width red green blue alpha blend-fn)
+         pos))
+     [(m/random width) (m/random width)]
+     (range iter))
+    (pix/set-pixels img pixels)
+    (pix/save-png "dejong.png" img)))
+
+(comment
+
+  (dejong-bitmap-duo
+   {:width 1280
+    :iter  3000000
+    :a     1.815
+    :b     -1.687
+    :c     2.551
+    :d     1.151
+    :col1  (col/rgba 0.7 0.2 0.15)
+    :col2  (col/rgba 0.1 0.2 0.5)
+    :alpha 0.15
+    :bg    (col/rgba 0 0 0.1)
+    :blend :add})
+
   )

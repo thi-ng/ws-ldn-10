@@ -154,6 +154,13 @@
         (recur (dec i))))
     arr))
 
+(defn set-pixel
+  ([^ints img x y w r g b a]
+   (aset-int img (unchecked-int (+ (* (int y) w) (int x)))
+             (pack-argb r g b a)))
+  ([^ints img idx r g b a]
+   (aset-int img idx (pack-argb r g b a))))
+
 (defn blend-pixel
   ([^ints img x y w r g b a blend-fn]
    (let[idx (unchecked-int (+ (* (int y) w) (int x)))
