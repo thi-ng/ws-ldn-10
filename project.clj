@@ -14,13 +14,13 @@
   :plugins      [[lein-figwheel "0.5.4-3"]
                  [lein-cljsbuild "1.1.3" :exclusions [[org.clojure/clojure]]]]
 
-  :source-paths ["src"]
+  :source-paths ["src/clj"]
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
   :cljsbuild {:builds
               [{:id           "dev"
-                :source-paths ["src"]
+                :source-paths ["src/cljs"]
                 :figwheel     true
                 :compiler     {:main                 ws-ldn-10.speech
                                :asset-path           "js/compiled/out"
@@ -28,7 +28,7 @@
                                :output-dir           "resources/public/js/compiled/out"
                                :source-map-timestamp true}}
                {:id           "min"
-                :source-paths ["src"]
+                :source-paths ["src/cljs"]
                 :compiler     {:output-to     "resources/public/js/compiled/app.js"
                                :optimizations :advanced
                                :pretty-print  false}}]}

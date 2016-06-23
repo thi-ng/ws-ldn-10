@@ -84,7 +84,7 @@
        (some (fn [x] (and (= :command (:type x)) (= cmd (:value x)))))))
 
 (def extract-phrases
-  (comp (partition-by #(not= "ok" %))
+  (comp (partition-by #(not (#{"ok" "okay"} %)))
         (take-nth 2)))
 
 (defn parse-input
