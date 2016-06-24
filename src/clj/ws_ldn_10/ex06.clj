@@ -9,7 +9,15 @@
   [& body]
   (conj (vec (cons :branch-start body)) :branch-end))
 
-(def vocab
+(def dragon-vocab
+  {:start   [:forward :x]
+   :x       [:x :right :y :forward :right]
+   :y       [:left :forward :x :left :y]
+   :forward [:forward]
+   :left    [:left]
+   :right   [:right]})
+
+(def tree-vocab
   {:start        [:forward
                   :left
                   :branch-start
@@ -35,10 +43,10 @@
    :branch-end   [:branch-end]})
 
 (defn rewrite-symbols
-  [vocab symbols]
-  (mapcat vocab symbols))
+  [tree-vocab symbols]
+  (mapcat tree-vocab symbols))
 
-;; (rewrite-symbols vocab (rewrite-symbols vocab [:start]))
+;; (rewrite-symbols tree-vocab (rewrite-symbols tree-vocab [:start]))
 
 (defn make-agent
   [pos theta length]
@@ -79,11 +87,11 @@
 
 (defmethod interpret :left
   [agent _]
-  (update agent :theta - (m/radians 30)))
+  (update agent :theta - (m/radians 90)))
 
 (defmethod interpret :right
   [agent _]
-  (update agent :theta + (m/radians 30)))
+  (update agent :theta + (m/radians 90)))
 
 (defmethod interpret :branch-start
   [agent _]
@@ -92,6 +100,11 @@
 (defmethod interpret :branch-end
   [agent _]
   (restore-agent agent))
+
+(defmethod interpret :default
+  [agent sym]
+  #_(prn "no impl for symbol:" sym)
+  agent)
 
 (defn interpret-symbols
   [agent syms]
@@ -115,5 +128,9 @@
 (visualize-agent
  "lsys.svg"
  (interpret-symbols
-  (make-agent (v/vec2 300 100) 0 100)
-  (last (take 3 (iterate (partial rewrite-symbols vocab) [:start])))))
+  (make-agent (v/vec2 300 300) 0 10)
+  (last (take 20 (iterate (partial rewrite-symbols dragon-vocab) [:start])))
+  ))
+
+(rewrite-symbols dragon-vocab (rewrite-symbols dragon-vocab (rewrite-symbols dragon-vocab [:start])))
+
