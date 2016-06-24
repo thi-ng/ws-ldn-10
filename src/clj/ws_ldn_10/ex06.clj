@@ -3,62 +3,85 @@
    [thi.ng.math.core :as m]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as v]
-   [thi.ng.geom.svg.core :as svg]))
+   [thi.ng.geom.svg.core :as svg]
+   [thi.ng.color.core :as col]))
 
-(defn make-branch
-  [& body]
-  (conj (vec (cons :branch-start body)) :branch-end))
+(def default-rules
+  {:fwd   [:fwd]
+   :left  [:left]
+   :right [:right]
+   :push  [:push]
+   :pop   [:pop]})
 
-(def dragon-vocab
-  {:start   [:forward :x]
-   :x       [:x :right :y :forward :right]
-   :y       [:left :forward :x :left :y]
-   :forward [:forward]
-   :left    [:left]
-   :right   [:right]})
+(def forward-aliases #{:a :b :c :d})
 
-(def tree-vocab
-  {:start        [:forward
-                  :left
-                  :branch-start
-                  :branch-start
-                  :start
-                  :branch-end
-                  :right
-                  :start
-                  :branch-end
-                  :right
-                  :forward
-                  :branch-start
-                  :right
-                  :forward
-                  :start
-                  :branch-end
-                  :left
-                  :start]
-   :forward      [:forward :forward]
-   :left         [:left]
-   :right        [:right]
-   :branch-start [:branch-start]
-   :branch-end   [:branch-end]})
+(def dragon-rules
+  {:start [:a]
+   :a     [:a :right :b :right]
+   :b     [:left :a :left :b]})
+
+(def gasket
+  {:start [:fwd :left
+           :fwd :left
+           :fwd :left
+           :fwd :left
+           :fwd]
+   :fwd   [:fwd :left
+           :fwd :right :right :fwd :right
+           :fwd :left :fwd :left :fwd]})
+
+(def tree-rules
+  {:start [:fwd
+           :left
+           :push :push :start :pop :right :start :pop
+           :right
+           :fwd
+           :push :right :fwd :start :pop
+           :left
+           :start]
+   :fwd   [:fwd :fwd]})
+
+(def penrose
+  {:start [:push :b :pop
+           :left :left
+           :push :b :pop
+           :left :left
+           :push :b :pop
+           :left :left
+           :push :b :pop
+           :left :left
+           :push :b :pop]
+   :a     [:c :left :left :d :right :right :right :right :b
+           :push :right :c :right :right :right :right :a :pop
+           :left :left]
+   :b     [:left :c :right :right :d
+           :push :right :right :right :a :right :right :b :pop
+           :left]
+   :c     [:right :a :left :left :b
+           :push :left :left :left :c :left :left :d :pop
+           :right]
+   :d     [:right :right :c :left :left :left :left :a
+           :push :left :d :left :left :left :left :b :pop
+           :right :right :b]})
 
 (defn rewrite-symbols
-  [tree-vocab symbols]
-  (mapcat tree-vocab symbols))
-
-;; (rewrite-symbols tree-vocab (rewrite-symbols tree-vocab [:start]))
+  [rules symbols]
+  (mapcat (merge default-rules rules) symbols))
 
 (defn make-agent
-  [pos theta length]
-  {:pos    pos
-   :theta  theta
-   :length length
-   :path   []
-   :stack  []})
+  [pos theta length branch-theta]
+  {:pos          pos
+   :theta        theta
+   :branch-theta branch-theta
+   :length       length
+   :path         []
+   :stack        []})
 
 (defn save-agent
   [agent]
-  (update agent :stack conj (dissoc agent :stack)))
+  (-> agent
+      (update :stack conj (dissoc agent :stack))
+      (assoc :path [])))
 
 (defn restore-agent
   [agent]
@@ -69,13 +92,13 @@
            :path  (into (:path agent') (:path agent)))))
 
 (defmulti interpret
-  (fn [agent sym & _] sym))
+  (fn [agent sym & _] (if (forward-aliases sym) :fwd sym)))
 
 (defmethod interpret :start
   [agent _]
-  (save-agent agent))
+  agent)
 
-(defmethod interpret :forward
+(defmethod interpret :fwd
   [agent _]
   (let [pos  (:pos agent)
         pos' (m/+ pos (g/as-cartesian
@@ -83,21 +106,21 @@
                                (:theta agent))))]
     (-> agent
         (assoc :pos pos')
-        (update :path conj [pos pos']))))
+        (update :path conj [pos pos' (count (:stack agent))]))))
 
 (defmethod interpret :left
   [agent _]
-  (update agent :theta - (m/radians 90)))
+  (update agent :theta - (:branch-theta agent)))
 
 (defmethod interpret :right
   [agent _]
-  (update agent :theta + (m/radians 90)))
+  (update agent :theta + (:branch-theta agent)))
 
-(defmethod interpret :branch-start
+(defmethod interpret :push
   [agent _]
   (save-agent agent))
 
-(defmethod interpret :branch-end
+(defmethod interpret :pop
   [agent _]
   (restore-agent agent))
 
@@ -114,23 +137,33 @@
   [path agent]
   (->> agent
        :path
-       (map (fn [[a b]] (svg/line a b {:stroke "black"})))
-       (svg/svg {:width 600 :height 600})
+       (map-indexed
+        (fn [i [a b depth]]
+          (svg/line a b {:stroke (col/hsva (/ i (count (:path agent))) 1 1)})))
+       (svg/svg {:width 1000 :height 1000})
        (svg/serialize)
        (spit path)))
 
-#_(visualize-agent
-   "lsys.svg"
-   (interpret-symbols
-    (make-agent (v/vec2 300 100) 0 100)
-    [:branch-start :forward :forward :branch-end :left :forward]))
+(visualize-agent
+ "lsys-dragon.svg"
+ (interpret-symbols
+  (make-agent (v/vec2 500 750) 0 5 m/HALF_PI)
+  (last (take 16 (iterate (partial rewrite-symbols dragon-rules) [:start])))))
 
 (visualize-agent
- "lsys.svg"
+ "lsys-gasket.svg"
  (interpret-symbols
-  (make-agent (v/vec2 300 300) 0 10)
-  (last (take 20 (iterate (partial rewrite-symbols dragon-vocab) [:start])))
-  ))
+  (make-agent (v/vec2 500 100) 0 10 (m/radians 72))
+  (last (take 6 (iterate (partial rewrite-symbols gasket) [:start])))))
 
-(rewrite-symbols dragon-vocab (rewrite-symbols dragon-vocab (rewrite-symbols dragon-vocab [:start])))
+(visualize-agent
+ "lsys-tree.svg"
+ (interpret-symbols
+  (make-agent (v/vec2 200 1000) (m/radians -70) 3 (m/radians 25))
+  (last (take 8 (iterate (partial rewrite-symbols tree-rules) [:start])))))
 
+(visualize-agent
+ "lsys-penrose.svg"
+ (interpret-symbols
+  (make-agent (v/vec2 500 500) 0 50 (m/radians 36))
+  (last (take 6 (iterate (partial rewrite-symbols penrose) [:start])))))
