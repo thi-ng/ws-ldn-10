@@ -7,7 +7,7 @@
    [thi.ng.geom.rect :as r]
    [thi.ng.geom.svg.core :as svg]))
 
-(def self-avoid true)
+(def self-avoid false)
 (def max-dist (Math/pow 60 2))
 (def max-charge 5)
 
@@ -27,7 +27,7 @@
    :speed       speed
    :parent      pole
    :target-dist (Math/pow (* speed 0.9) 2)
-   :active      true})
+   :active      (pos? (:charge pole))})
 
 (defn update-agent
   [poles bounds {:keys [pos target-dist parent] :as a}]
@@ -39,14 +39,15 @@
                      charge' (/ (:charge pole) dist)
                      a       (if (< dist max-dist)
                                (-> a
-                                   (update :charge + (* (:charge pole) (- 1 (min 1 (/ dist max-dist)))))
+                                   (update :charge + (* (:charge pole)
+                                                        (- 1 (min 1 (/ dist max-dist)))))
                                    (update :num-charges inc))
                                a)]
                  (if (< dist target-dist)
-                   (reduced (assoc a :active false :target (:pos pole)))
+                   (reduced (assoc a :active false :target pole))
                    (if (or (not= pole parent) (not self-avoid))
                      (update a :dir m/+ (m/* delta charge'))
-                     (update a :dir m/+ (m/* delta (Math/abs charge')))))))
+                     (update a :dir m/+ (m/* delta charge'))))))
              (assoc a :dir (v/vec2) :charge 0 :num-charges 0)
              poles)
           a (if (pos? (:num-charges a))
@@ -60,17 +61,19 @@
               (assoc :pos    pos'
                      :active (g/contains-point? bounds pos'))))
         (if-let [t (:target a)]
-          (update a :path conj t)
-          a)))
-    a))
+          (-> a
+              (update :path conj (:pos t))
+              (update :charges conj (normalize-charge (:charge t))))
+          a))
+      a))
 
-(defn field-line
-  [a]
-  (->> (map vector (:path a) (:charges a))
-       (partition 2 1)
-       (map
-        (fn [[[p ch] [q]]]
-          (svg/line p q {:stroke (m/mix (col/rgba 0 0 1) (col/rgba 1 0 0) ch)})))))
+  (defn field-line
+    [a]
+    (->> (map vector (:path a) (:charges a))
+         (partition 2 1)
+         (map
+          (fn [[[p ch] [q]]]
+            (svg/line p q {:stroke (m/mix (col/rgba 0 0 1) (col/rgba 1 0 0) ch)}))))))
 
 (defn export-frame
   [frame width agents]
@@ -102,9 +105,10 @@
 
   (field-lines
    {:width  600
-    :nump   50
+    :nump   20
     :numa   10
-    :speed  5
+    :speed  4
     :charge max-charge
-    :iter   100})
+    :iter   150})
+
   )
