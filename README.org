@@ -1,0 +1,28 @@
+* Workshop: Generative design w/ Clojure & thi.ng
+
+** Examples
+
+*** Namespace: ws-ldn-10.ex01
+
+| [[./assets/ex03.png]] | [[./assets/ex04.png]] |
+
+*** Namespace: ws-ldn-10.ex02
+
+[[./assets/dejong.png]]
+
+*** Namespace: ws-ldn-10.ex03
+
+[[./assets/noise-lines.png]]
+
+*** Namespace: ws-ldn-10.ex04
+
+[[./assets/agents.png]]
+
+*** Namespace: ws-ldn-10.ex06
+
+| [[./assets/lsys-gasket.png]] | [[./assets/lsys-penrose.png]] |
+| [[./assets/lsys-tree.png]]   | [[./assets/lsys-drago.png]]   |
+
+** License
+
+This project is open source and licensed under the [[http://www.apache.org/licenses/LICENSE-2.0][Apache Software License 2.0]].
