@@ -21,7 +21,7 @@
 *** Namespace: ws-ldn-10.ex06
 
 | [[./assets/lsys-gasket.png]] | [[./assets/lsys-penrose.png]] |
-| [[./assets/lsys-tree.png]]   | [[./assets/lsys-drago.png]]   |
+| [[./assets/lsys-tree.png]]   | [[./assets/lsys-dragon.png]]  |
 
 ** License
 
