@@ -64,16 +64,16 @@
           (-> a
               (update :path conj (:pos t))
               (update :charges conj (normalize-charge (:charge t))))
-          a))
-      a))
+          a)))
+    a))
 
-  (defn field-line
-    [a]
-    (->> (map vector (:path a) (:charges a))
-         (partition 2 1)
-         (map
-          (fn [[[p ch] [q]]]
-            (svg/line p q {:stroke (m/mix (col/rgba 0 0 1) (col/rgba 1 0 0) ch)}))))))
+(defn field-line
+  [a]
+  (->> (map vector (:path a) (:charges a))
+       (partition 2 1)
+       (map
+        (fn [[[p ch] [q]]]
+          (svg/line p q {:stroke (m/mix (col/rgba 0 0 1) (col/rgba 1 0 0) ch)})))))
 
 (defn export-frame
   [frame width agents]
@@ -99,16 +99,18 @@
                      (export-frame i width agents)
                      (recur (inc i) agents))
                    agents))]
-    (println "done")))
+    (println "done")
+    agents))
 
 (comment
 
-  (field-lines
-   {:width  600
-    :nump   20
-    :numa   10
-    :speed  4
-    :charge max-charge
-    :iter   150})
+  (def agents
+    (field-lines
+     {:width  600
+      :nump   50
+      :numa   20
+      :speed  5
+      :charge max-charge
+      :iter   130}))
 
   )
