@@ -39,6 +39,12 @@
 
 *** Namespace: ws-ldn-10.ex06
 
+- L-Systems
+- Recursive rule expansions
+- Writing simple interpreter (using =defmulti=)
+- Implementing branching (state stacks)
+- Visualizing recursion depth
+
 | [[./assets/lsys-gasket.png]] | [[./assets/lsys-penrose.png]] |
 | [[./assets/lsys-tree.png]]   | [[./assets/lsys-dragon.png]]  |
 
