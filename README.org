@@ -4,17 +4,36 @@
 
 *** Namespace: ws-ldn-10.ex01
 
+- Repetition & parameterization of basic processes
+- Coordinate systems (cartesian vs polar)
+- Custom shape generation
+- Shape sampling
+
 | [[./assets/ex03.png]] | [[./assets/ex04.png]] |
 
 *** Namespace: ws-ldn-10.ex02
+
+- Iterative systems #1
+- SVG vs bitmap outputs
+- Mapping parameters to colors
 
 [[./assets/dejong.png]]
 
 *** Namespace: ws-ldn-10.ex03
 
+- Noise & octaves
+- Turbulence
+- Tonemapping noise values
+- Using noise to drive design parameters
+
 [[./assets/noise-lines.png]]
 
 *** Namespace: ws-ldn-10.ex04
+
+- Agent systems
+- Di-pole field lines
+- =deftype= & =defprotocol=
+- SVG image sequence output & MP4 conversion
 
 [[./assets/agents.png]]
 
