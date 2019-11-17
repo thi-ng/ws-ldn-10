@@ -1,5 +1,7 @@
 * Workshop: Generative design w/ Clojure & thi.ng
 
+There is a [[https://medium.com/@thi.ng/workshop-report-generative-design-with-clojure-7d6d8ea9a6e8][related article]] which covers the examples found in this repository in more detail.
+
 ** Examples
 
 *** Namespace: ws-ldn-10.ex01
